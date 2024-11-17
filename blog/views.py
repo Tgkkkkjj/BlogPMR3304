@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post
 from .forms import PostForm
 from django.shortcuts import get_object_or_404, redirect
-from .models import Post, Comment
+from .models import Post, Comment, Category
 
 
 # List View 
@@ -49,9 +49,30 @@ class PostUpdateView(UpdateView):
     template_name = 'post_create.html'
     success_url = reverse_lazy('post_list')
 
-# Delete Viewa
+# Delete Views
 class PostDeleteView(DeleteView):
     model = Post
     template_name = 'post_confirm_delete.html'
     context_object_name = 'post'
     success_url = reverse_lazy('post_list')
+
+#Category Views
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'category_list.html'
+    context_object_name = 'categories'
+
+# Detail View from Categories
+class CategoryDetailView(ListView):
+    model = Post
+    template_name = 'post_list.html'  # Reutiliza o template da listagem de posts
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, pk=self.kwargs['pk'])
+        return self.category.posts.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.category
+        return context

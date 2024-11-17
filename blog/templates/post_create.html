@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>{% if post %}Editar{% else %}Criar{% endif %} Post</h1>
+    <h1>{% if object %}Editar Post{% else %}Criar Novo Post{% endif %}</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }} 
-
-        <button type="submit">{% if post %}Atualizar{% else %}Criar{% endif %} Post</button>
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
     </form>
 {% endblock content %}

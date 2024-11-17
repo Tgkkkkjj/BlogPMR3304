@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Todos os Posts</h1>
+    {% if category %}
+        <h1>Posts na Categoria: {{ category.name }}</h1>
+    {% else %}
+        <h1>Todos os Posts</h1>
+    {% endif %}
+    
     <a href="{% url 'create_post' %}">Criar Novo Post</a>
     <ul>
         {% for post in posts %}
@@ -11,6 +16,8 @@
                 <a href="{% url 'delete_post' post.id %}">Apagar</a>
             </span>
         </li>
+        {% empty %}
+        <li>Nenhum post encontrado.</li>
         {% endfor %}
     </ul>
 {% endblock content %}
