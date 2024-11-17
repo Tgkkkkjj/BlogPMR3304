@@ -1,36 +1,37 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .forms import PostForm
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post
+from .forms import PostForm
 
-# Create/Edit Post View
-def post_form_view(request, post_id=None):
-    post = None
-    if post_id:  # If post_id is provided, we're editing
-        post = get_object_or_404(Post, id=post_id)
-        form = PostForm(request.POST or None, instance=post)
-    else:  # If no post_id, we're creating a new post
-        form = PostForm(request.POST or None)
+# List View 
+class PostListView(ListView):
+    model = Post
+    template_name = 'post_list.html'
+    context_object_name = 'posts'
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect('post_list')
+# Detail View 
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'post_detail.html'
+    context_object_name = 'post'
 
-    return render(request, 'post_create.html', {'form': form, 'post': post})
+# Create View 
+class PostCreateView(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_create.html'
+    success_url = reverse_lazy('post_list')
 
-# Read (list all posts)
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts': posts})
+# Update View 
+class PostUpdateView(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_create.html'
+    success_url = reverse_lazy('post_list')
 
-# Read (individual post)
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    return render(request, 'post_detail.html', {'post': post})
-
-# Delete
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.method == "POST":
-        post.delete()
-        return redirect('post_list')
-    return render(request, 'post_confirm_delete.html', {'post': post})
+# Delete View
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'post_confirm_delete.html'
+    context_object_name = 'post'
+    success_url = reverse_lazy('post_list')
