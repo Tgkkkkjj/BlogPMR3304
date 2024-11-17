@@ -10,4 +10,24 @@
         </small>
         <p>{{ post.body | linebreaks }}</p>
     {% endblock page_content %}
+
+    <h4>Add a Comment</h4>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="body" rows="4" placeholder="Write your comment..."></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <p><strong>{{ comment.display_author }}</strong></p>
+                <p>{{ comment.body }}</p>
+                <p>Posted at: {{ comment.created_at }}</p>
+            </li>
+        {% empty %}
+            <li>No comments yet.</li>
+        {% endfor %}
+    </ul>
 {% endblock content %}
