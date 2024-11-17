@@ -3,12 +3,8 @@
     <h1>{% if post %}Editar{% else %}Criar{% endif %} Post</h1>
     <form method="post">
         {% csrf_token %}
-        <label for="title">Titulo:</label>
-        <input type="text" name="title" id="title" value="{{ post.title|default:'' }}" required><br><br>
-        
-        <label for="body">Conteudo:</label>
-        <textarea name="body" id="body" rows="5" required>{{ post.body|default:'' }}</textarea><br><br>
-        
+        {{ form.as_p }} 
+
         <button type="submit">{% if post %}Atualizar{% else %}Criar{% endif %} Post</button>
     </form>
 {% endblock content %}

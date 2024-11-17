@@ -1,16 +1,21 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import PostForm
 from .models import Post
 
-# Create
-def create_post(request):
-    if request.method == "POST":
-        title = request.POST.get('title')
-        body = request.POST.get('body')
-        Post.objects.create(title=title, body=body)
+# Create/Edit Post View
+def post_form_view(request, post_id=None):
+    post = None
+    if post_id:  # If post_id is provided, we're editing
+        post = get_object_or_404(Post, id=post_id)
+        form = PostForm(request.POST or None, instance=post)
+    else:  # If no post_id, we're creating a new post
+        form = PostForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
         return redirect('post_list')
-    return render(request, 'post_create.html')
+
+    return render(request, 'post_create.html', {'form': form, 'post': post})
 
 # Read (list all posts)
 def post_list(request):
@@ -21,16 +26,6 @@ def post_list(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     return render(request, 'post_detail.html', {'post': post})
-
-# Update
-def update_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.method == "POST":
-        post.title = request.POST.get('title')
-        post.body = request.POST.get('body')
-        post.save()
-        return redirect('post_detail', post_id=post.id)
-    return render(request, 'post_create.html', {'post': post})
 
 # Delete
 def delete_post(request, post_id):
